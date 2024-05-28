@@ -1,25 +1,15 @@
-# 導入Discord.py模組
+#copy from internet
 import discord
+from discord.ext import commands
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix = "%", intents = intents)
 
-# client是跟discord連接，intents是要求機器人的權限
-intents = discord.Intents.default()
-intents.message_content = True
-client = discord.Client(intents = intents)
-
-# 調用event函式庫
-@client.event
-# 當機器人完成啟動
+@bot.event
 async def on_ready():
-    print(f"目前登入身份 --> {client.user}")
+    print(bot.user)
 
-@client.event
-# 當頻道有新訊息
-async def on_message(message):
-    # 排除機器人本身的訊息，避免無限循環
-    if message.author == client.user:
-        return
-    # 新訊息包含Hello，回覆Hello, world!
-    if message.content == "Hello":
-        await message.channel.send("Hello, world!")
+@bot.command()
+async def Hello(ctx):
+    await ctx.send("Hello, world!")
 
-client.run("MTI0NDkxMjk1ODYwMjIxNTQ2NA.Ghf1rr.YLFj8a33G4iAV-nqk4Pn0AqRUC_euCpsR46r30")
+bot.run("機器人的TOKEN")
