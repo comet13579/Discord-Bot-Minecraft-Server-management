@@ -22,11 +22,11 @@ async def Hello(ctx, *, message: str):
 
 @bot.command()
 async def command(ctx, *, message: str):
-    with python_rcon_client.RCONClient('192.168.1.248', 25575, '12345678') as rcon_client:
+    with python_rcon_client.RCONClient('localhost', 25575, '12345678') as rcon_client:
         rcon_client.command(message)
 
 @bot.command()
 async def start(ctx):
-    subprocess.run([r"D:\Minecraft_server\minecraft server 1.19.2\start.bat"])
+    subprocess.run([r"path"])
 
-bot.run("MTI0NDkxMjk1ODYwMjIxNTQ2NA.GgqN5x.hLvnrJF-VMrqBJZHHkqMNv-Oc4dpleZk0xdsvA")
+bot.run("bot token")
