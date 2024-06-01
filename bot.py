@@ -24,6 +24,8 @@ async def on_ready():
 @bot.command()
 async def Hello(ctx, *, message: str):
     print(message)
+async def Hello(ctx, *, message: str):
+    print(message)
     await ctx.send("Hello, world!")
 
 @bot.command()
