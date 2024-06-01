@@ -32,6 +32,15 @@ async def Hello(ctx, *, message: str):
 async def command(ctx, *, message: str):
     with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command(message)
+        for output in rcon_client.outputs:
+            await ctx.send(output)
+
+@bot.command()
+async def stop(ctx, *, message: str):
+    with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+        rcon_client.command("stop")
+        for output in rcon_client.outputs:
+            await ctx.send(output)
 
 @bot.command()
 async def start(ctx):

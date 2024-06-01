@@ -8,6 +8,7 @@ class RCONClient:
         self.port = port
         self.password = password
         self.socket = None
+        self.outputs = []
 
     def __enter__(self):
         self.connect()
@@ -27,6 +28,7 @@ class RCONClient:
             self.socket.connect((self.host, self.port))
         except ConnectionRefusedError:
             print("Server is not reachable. Connection refused.")
+            self.outputs.append("Server is not reachable. Connection refused.")
 
     def login(self):
         """
@@ -40,6 +42,7 @@ class RCONClient:
                 self.handle_response(response)
             except (socket.timeout, ConnectionAbortedError) as e:
                 print(f"Error during login: {e}")
+                self.outputs.append(f"Error during login: {e}")
 
     def command(self, cmd):
         """
@@ -52,6 +55,7 @@ class RCONClient:
             self.handle_response_with_log(cmd, response)
         except (socket.timeout, ConnectionAbortedError) as e:
             print(f"Error during command execution: {e}")
+            self.outputs.append(f"Error during command execution: {e}")
 
     def handle_response(self, response):
         """
@@ -64,6 +68,8 @@ class RCONClient:
             except UnicodeDecodeError:
                 print("Unable to decode response as UTF-8, printing hexadecimal representation:")
                 print(response.hex())
+                self.outputs.append("Unable to decode response as UTF-8, printing hexadecimal representation:")
+                self.outputs.append(response.hex())
 
     def handle_response_with_log(self, command, response):
         """
@@ -74,10 +80,12 @@ class RCONClient:
                 decoded_response = response.decode('utf-8').strip()
                 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 print(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
+                self.outputs.append(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
             except UnicodeDecodeError:
                 hex_response = response.hex()
                 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 print(f"{current_time} - Command: {command}\nUnable to decode response as UTF-8, printing hexadecimal representation:\n{hex_response}")
+                self.outputs.append(f"{current_time} - Command: {command}\nUnable to decode response as UTF-8, printing hexadecimal representation:")
 
     def close(self):
         """
