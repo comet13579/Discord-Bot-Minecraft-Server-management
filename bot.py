@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from RCON import python_rcon_client
 import subprocess
+import shlex
+import sys
 
 #load properties
 with open("bot.properties") as properties:
@@ -24,8 +26,6 @@ async def on_ready():
 @bot.command()
 async def Hello(ctx, *, message: str):
     print(message)
-async def Hello(ctx, *, message: str):
-    print(message)
     await ctx.send("Hello, world!")
 
 @bot.command()
@@ -35,6 +35,10 @@ async def command(ctx, *, message: str):
 
 @bot.command()
 async def start(ctx):
-    subprocess.run([r"f{launch_path}"])
+    if sys.platform == "win32":
+        args = shlex.split("cmd.exe /c " + launch_path)
+    else:
+        args = shlex.split("./" + launch_path)
+    subprocess.Popen(args)
 
 bot.run(bot_token)
