@@ -24,8 +24,7 @@ async def on_ready():
     print(bot.user)
 
 @bot.command()
-async def Hello(ctx, *, message: str):
-    print(message)
+async def Hello(ctx):
     await ctx.send("Hello, world!")
 
 @bot.command()
@@ -36,11 +35,9 @@ async def command(ctx, *, message: str):
             await ctx.send(output)
 
 @bot.command()
-async def stop(ctx, *, message: str):
+async def stop(ctx):
     with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
-        for output in rcon_client.outputs:
-            await ctx.send(output)
 
 @bot.command()
 async def start(ctx):
