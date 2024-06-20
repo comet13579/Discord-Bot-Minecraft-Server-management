@@ -23,16 +23,16 @@ bot = commands.Bot(command_prefix = bot_prefix, intents = intents)
 async def on_ready():
     print(bot.user)
 
-@bot.command()
-async def Hello(ctx):
-    await ctx.send("Hello, world!")
+#@bot.command()
+#async def Hello(ctx):
+#    await ctx.send("Hello, world!")
 
-@bot.command()
-async def command(ctx, *, message: str):
-    with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
-        rcon_client.command(message)
-        for output in rcon_client.outputs:
-            await ctx.send(output)
+#@bot.command()
+#async def command(ctx, *, message: str):
+#    with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+#        rcon_client.command(message)
+#        for output in rcon_client.outputs:
+#            await ctx.send(output)
 
 @bot.command()
 async def stop(ctx):
