@@ -28,7 +28,7 @@ class RCONClient:
             self.socket.connect((self.host, self.port))
         except ConnectionRefusedError:
             print("Server is not reachable. Connection refused.")
-            self.outputs.append("0") ##Server is not reachable. Connection refused.
+            self.outputs.append("0") ##Server is not reachable mark.
             self.outputs.append("Server is not reachable. Connection refused.")
 
     def login(self):
