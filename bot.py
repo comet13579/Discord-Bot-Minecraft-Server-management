@@ -50,6 +50,10 @@ async def serverexist(ctx):
     await ctx.send("Check the server through \n https://mcstatus.io/status/java/" + server_ip)
 
 @bot.command()
+async def ip(ctx):
+    await ctx.send(server_ip)
+
+@bot.command()
 async def start(ctx):
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
