@@ -29,7 +29,9 @@ async def on_ready():
 @commands.cooldown(1, 30, commands.BucketType.user)
 async def stop(ctx):
     """停止伺服器 每30秒只能使用一次"""
-
+    await ctx.send("Trying to stop the server")
+    if enable_Chinese:
+        await ctx.send("正在嘗試關閉伺服器")
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
         serveroff = rcon_client.outputs[0]
