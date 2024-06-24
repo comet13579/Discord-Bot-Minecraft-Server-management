@@ -26,9 +26,9 @@ async def on_ready():
     print(bot.user)
 
 @bot.command()
-@commands.cooldown(1, 30, commands.BucketType.user)
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def stop(ctx):
-    """停止伺服器 每30秒只能使用一次"""
+    """停止伺服器 每60秒只能使用一次"""
     await ctx.send("Trying to stop the server")
     if enable_Chinese:
         await ctx.send("正在嘗試關閉伺服器")
@@ -70,9 +70,9 @@ async def ip(ctx):
     await ctx.send(server_ip)
 
 @bot.command()
-@commands.cooldown(1, 30, commands.BucketType.user)
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def start(ctx):
-    """啟動伺服器 每30秒只能使用一次"""
+    """啟動伺服器 每60秒只能使用一次"""
 
     await ctx.send("Trying to start the server")
     if enable_Chinese:
