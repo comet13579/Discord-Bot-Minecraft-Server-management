@@ -3,6 +3,7 @@ from discord.ext import commands
 from RCON import python_rcon_client
 import subprocess
 import sys
+import time
 
 #load properties
 with open("bot.properties") as properties:
@@ -67,6 +68,15 @@ async def ip(ctx):
 @bot.command()
 async def start(ctx):
     f"""{"Start the server " + "啟動伺服器" * enable_Chinese}"""
+    with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+        rcon_client.command("say some stupid guys are trying to start the server" + "有傻子向伺服器發送啟動指令" * enable_Chinese)
+        serveron = rcon_client.outputs[0]
+    time.sleep(1)
+    if serveron == "serveron":
+        await ctx.send("Server is already running")
+        if enable_Chinese:
+            await ctx.send("伺服器已經在運行中")
+        return
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
