@@ -26,8 +26,9 @@ async def on_ready():
     print(bot.user)
 
 @bot.command()
+@commands.cooldown(1, 30, commands.BucketType.user)
 async def stop(ctx):
-    """停止伺服器"""
+    """停止伺服器 每30秒只能使用一次"""
 
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
@@ -38,8 +39,10 @@ async def stop(ctx):
             await ctx.send("伺服器關閉中...")
     else:
         await ctx.send("Server is already off")
+        await ctx.send(f"{ctx.author.mention} is a stupid guy")
         if enable_Chinese:
             await ctx.send("伺服器已經關閉")
+            await ctx.send(f"{ctx.author.mention} 是個傻瓜")
 
 @bot.command()
 async def hello(ctx):
@@ -65,8 +68,9 @@ async def ip(ctx):
     await ctx.send(server_ip)
 
 @bot.command()
+@commands.cooldown(1, 30, commands.BucketType.user)
 async def start(ctx):
-    """啟動伺服器"""
+    """啟動伺服器 每30秒只能使用一次"""
 
     await ctx.send("Trying to start the server")
     if enable_Chinese:
@@ -77,12 +81,17 @@ async def start(ctx):
             rcon_client.command("say 有個傻瓜正在嘗試啟動伺服器")
         time.sleep(1)
         print(rcon_client.outputs)
-        serveroff = rcon_client.outputs[0]
-    if serveroff != "0":
+        serveroff = rcon_client.outputs[0] ##take RCON status
+    
+    if serveroff != "0": ##indicate RCON is not off, server is on
         await ctx.send("Server is already running")
+        await ctx.send(f"{ctx.author.mention} is a stupid guy")
         if enable_Chinese:
             await ctx.send("伺服器已經在運行中")
+            await ctx.send(f"{ctx.author.mention} 是個傻瓜")    
         return
+    
+
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
