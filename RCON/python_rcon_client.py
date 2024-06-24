@@ -28,6 +28,7 @@ class RCONClient:
             self.socket.connect((self.host, self.port))
         except ConnectionRefusedError:
             print("Server is not reachable. Connection refused.")
+            self.outputs.append("0") ##Server is not reachable. Connection refused.
             self.outputs.append("Server is not reachable. Connection refused.")
 
     def login(self):
@@ -80,7 +81,6 @@ class RCONClient:
                 decoded_response = response.decode('utf-8').strip()
                 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 print(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
-                self.outputs.append("serveron")
                 self.outputs.append(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
             except UnicodeDecodeError:
                 hex_response = response.hex()
