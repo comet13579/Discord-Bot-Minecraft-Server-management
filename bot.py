@@ -14,6 +14,7 @@ with open("bot.properties") as properties:
     server_RCON_passsword = lines[4].split("=")[1].strip()
     launch_path = lines[5].split("=")[1].strip()
     server_ip = lines[6].split("=")[1].strip()
+    enable_Chinese = int(lines[7].split("=")[1].strip())
 
 #initialize bot+
 intents = discord.Intents.all()
@@ -36,30 +37,36 @@ async def on_ready():
 
 @bot.command()
 async def stop(ctx):
-    """Stop the server 關閉伺服器"""
+    f"""{"Stop the server " + "關閉伺服器" * enable_Chinese}"""
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
     await ctx.send("Server stopping...")
+    if enable_Chinese:
+        await ctx.send("伺服器關閉中...")
 
 @bot.command()
 async def hello(ctx):
-    """Says hello 在Minecraft服务器中说hello (能夠有機會解決time out問題)"""
+    f"""{"Says hello (might solve time out issue) " + "在Minecraft服务器中说hello (能夠有機會解決time out問題)" * enable_Chinese}"""
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("say hello")
+        print(rcon_client.outputs)
 
 @bot.command()
 async def serverexist(ctx):
-    """Check if the server is online 檢查伺服器是否在線上"""
-    await ctx.send("Check the server through \n https://mcstatus.io/status/java/" + server_ip)
+    f"""{"Check if the server is online " + "檢查伺服器是否在線上" * enable_Chinese}"""
+    await ctx.send("Check the server through the following link")
+    if enable_Chinese:
+        await ctx.send("使用以下連結檢查伺服器是否開啟")
+    await ctx.send("https://mcstatus.io/status/java/" + server_ip)
 
 @bot.command()
 async def ip(ctx):
-    """Get the server ip address 獲取伺服器IP地址"""
+    f"""{"Get the server ip address " + "獲取伺服器IP地址" * enable_Chinese}"""
     await ctx.send(server_ip)
 
 @bot.command()
 async def start(ctx):
-    """Start the server 啟動伺服器"""
+    f"""{"Start the server " + "啟動伺服器" * enable_Chinese}"""
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
@@ -68,5 +75,7 @@ async def start(ctx):
     print(launch_path)
     subprocess.Popen(args)
     await ctx.send("Server starting...")
+    if enable_Chinese:
+        await ctx.send("伺服器啟動中...")
 
 bot.run(bot_token)

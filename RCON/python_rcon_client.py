@@ -80,6 +80,7 @@ class RCONClient:
                 decoded_response = response.decode('utf-8').strip()
                 current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 print(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
+                self.outputs.append("serveron")
                 self.outputs.append(f"{current_time} - Command: {command}\nResponse: {decoded_response}")
             except UnicodeDecodeError:
                 hex_response = response.hex()
