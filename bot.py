@@ -42,19 +42,23 @@ async def stop(ctx):
 
 @bot.command()
 async def hello(ctx):
+    """Says hello"""
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("say hello")
 
 @bot.command()
 async def serverexist(ctx):
+    """Check if the server is online"""
     await ctx.send("Check the server through \n https://mcstatus.io/status/java/" + server_ip)
 
 @bot.command()
 async def ip(ctx):
+    """Get the server ip address"""
     await ctx.send(server_ip)
 
 @bot.command()
 async def start(ctx):
+    """Start the server"""
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
