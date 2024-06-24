@@ -37,6 +37,12 @@ async def on_ready():
 async def stop(ctx):
     with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
+    await ctx.send("Server stopping...")
+
+@bot.command()
+async def hello(ctx):
+    with python_rcon_client.RCONClient(server_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+        rcon_client.command("say hello")
 
 @bot.command()
 async def start(ctx):
@@ -47,5 +53,6 @@ async def start(ctx):
     print(args)
     print(launch_path)
     subprocess.Popen(args)
+    await ctx.send("Server starting...")
 
 bot.run(bot_token)
