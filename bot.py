@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from RCON import python_rcon_client
 import subprocess
-import shlex
 import sys
 
 #load properties
@@ -42,9 +41,11 @@ async def stop(ctx):
 @bot.command()
 async def start(ctx):
     if sys.platform == "win32":
-        args = shlex.split("cmd.exe /c " + launch_path)
+        args = ["cmd.exe","/c ",launch_path]
     else:
-        args = shlex.split("./" + launch_path)
+        args = ["./",launch_path]
+    print(args)
+    print(launch_path)
     subprocess.Popen(args)
 
 bot.run(bot_token)
