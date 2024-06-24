@@ -36,29 +36,30 @@ async def on_ready():
 
 @bot.command()
 async def stop(ctx):
+    """Stop the server 關閉伺服器"""
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("stop")
     await ctx.send("Server stopping...")
 
 @bot.command()
 async def hello(ctx):
-    """Says hello"""
+    """Says hello 在Minecraft服务器中说hello (能夠有機會解決time out問題)"""
     with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
         rcon_client.command("say hello")
 
 @bot.command()
 async def serverexist(ctx):
-    """Check if the server is online"""
+    """Check if the server is online 檢查伺服器是否在線上"""
     await ctx.send("Check the server through \n https://mcstatus.io/status/java/" + server_ip)
 
 @bot.command()
 async def ip(ctx):
-    """Get the server ip address"""
+    """Get the server ip address 獲取伺服器IP地址"""
     await ctx.send(server_ip)
 
 @bot.command()
 async def start(ctx):
-    """Start the server"""
+    """Start the server 啟動伺服器"""
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
