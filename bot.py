@@ -62,11 +62,17 @@ async def hello(ctx):
 @bot.command()
 async def serverexist(ctx):
     """檢查伺服器是否在線上"""
-
-    await ctx.send("Check the server through the following link")
-    if enable_Chinese:
-        await ctx.send("使用以下連結檢查伺服器是否開啟")
-    await ctx.send("https://mcstatus.io/status/java/" + server_ip)
+    with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+        rcon_client.command("stop")
+        serveroff = rcon_client.outputs[0]
+    if serveroff != "0": 
+        await ctx.send("Server is running fine")
+        if enable_Chinese:
+            await ctx.send("伺服器運行良好")
+    else:
+        await ctx.send("Server is offline/stoped")
+        if enable_Chinese:
+            await ctx.send("伺服器已關閉/離線")
 
 @bot.command()
 async def ip(ctx):
@@ -77,36 +83,32 @@ async def ip(ctx):
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def forcequit(ctx):
     """強制關閉伺服器 每60秒只能使用一次"""
+
     class myView(View):
         def __init__(self,ctx):
             super().__init__(timeout=10)
             self.ctx = ctx
-        async def on_timeout(self) -> None:
+        async def on_timeout(self):
             await self.ctx.send("Time out " + "操作逾時" * enable_Chinese, view=None)
+        
+        @discord.ui.button(label="KILL" + "強制關閉" * enable_Chinese, style=discord.ButtonStyle.danger)
+        async def button_callback(interaction):
+            ##kill the server with pid
+            if sys.platform == "win32":
+                subprocess.run(["taskkill","/F","/PID",str(jar_pid)])
+            else:
+                subprocess.run(["kill",str(jar_pid)])
+            message = "Server is forced to stop"  + "\n伺服器已被強制關閉" * enable_Chinese
+            await interaction.response.edit_message(content = message, view=None)
 
-    yesbutton = Button(label="KILL" + "強制關閉" * enable_Chinese, style=discord.ButtonStyle.danger)
-    nobutton = Button(label="NO" + "不要關閉" * enable_Chinese, style=discord.ButtonStyle.blurple)
+        @discord.ui.button(label="NO" + "不要關閉" * enable_Chinese, style=discord.ButtonStyle.blurple)
+        async def button_callback(interaction):
+            message = "Force Shut is rejected" + "\n伺服器並未強制關閉" * enable_Chinese
+            await interaction.response.edit_message(content = message, view=None)
+
     view = myView(ctx)
-    view.add_item(yesbutton)
-    view.add_item(nobutton)
     await ctx.send("Are you sure to force quit the server?" + "\n你要強制關閉伺服器嗎?" * enable_Chinese, view=view)
 
-    async def kill_itself(interaction):
-        
-        ##kill the server with pid
-        if sys.platform == "win32":
-            subprocess.run(["taskkill","/F","/PID",str(jar_pid)])
-        else:
-            subprocess.run(["kill",str(jar_pid)])
-        message = "Server is forced to stop"  + "\n伺服器已被強制關閉" * enable_Chinese
-        await interaction.response.edit_message(content = message, view=None)
-    async def no_kill(interaction):
-        message = "Force Shut is rejected" + "\n伺服器並未強制關閉" * enable_Chinese
-        await interaction.response.edit_message(content = message, view=None)
-
-
-    yesbutton.callback = kill_itself
-    nobutton.callback = no_kill
     ##i just copy these button interactions from youtube
 
 
