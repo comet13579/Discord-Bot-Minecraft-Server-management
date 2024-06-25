@@ -5,8 +5,7 @@ from RCON import python_rcon_client
 import subprocess
 import sys
 import time
-
-global jar_itself
+import ctypes
 
 #load properties
 with open("bot.properties") as properties:
@@ -23,6 +22,24 @@ with open("bot.properties") as properties:
 #initialize bot+
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = bot_prefix, intents = intents)
+
+def force_quit_process(pid):
+    PROCESS_TERMINATE = 1
+    process_handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, pid)
+    
+    if not process_handle:
+        print(f"Failed to open process with PID {pid}.")
+        return
+    
+    result = ctypes.windll.kernel32.TerminateProcess(process_handle, -1)
+    
+    if not result:
+        print(f"Failed to terminate process with PID {pid}.")
+    else:
+        print(f"Process {pid} has been forcefully terminated.")
+    
+    ctypes.windll.kernel32.CloseHandle(process_handle)
+    ##function from gpt
 
 @bot.event
 async def on_ready():
@@ -69,24 +86,33 @@ async def serverexist(ctx):
 @bot.command()
 async def ip(ctx):
     """獲取伺服器IP地址"""
-
     await ctx.send(server_ip)
 
 @bot.command()
 @commands.cooldown(1, 60, commands.BucketType.user)
 async def forcequit(ctx):
     """強制關閉伺服器 每60秒只能使用一次"""
-    global jar_itself
+    class myView(View):
+        def __init__(self,ctx):
+            super().__init__(timeout=10)
+            self.ctx = ctx
+        async def on_timeout(self) -> None:
+            await self.ctx.send("Time out " + "操作逾時" * enable_Chinese, view=None)
+
     yesbutton = Button(label="KILL" + "強制關閉" * enable_Chinese, style=discord.ButtonStyle.danger)
     nobutton = Button(label="NO" + "不要關閉" * enable_Chinese, style=discord.ButtonStyle.blurple)
-    view = View(timeout=10)
+    view = myView(ctx)
     view.add_item(yesbutton)
     view.add_item(nobutton)
     await ctx.send("Are you sure to force quit the server?" + "\n你要強制關閉伺服器嗎?" * enable_Chinese, view=view)
 
     async def kill_itself(interaction):
-        global jar_itself
-        jar_itself.kill()
+        
+        if sys.platform == "win32":
+            force_quit_process(jar_itself.pid)
+        else:
+            jar_itself.kill()
+        ##kill the server
         message = "Server is forced to stop"  + "\n伺服器已被強制關閉" * enable_Chinese
         await interaction.response.edit_message(content = message, view=None)
     async def no_kill(interaction):
@@ -95,7 +121,7 @@ async def forcequit(ctx):
 
 
     yesbutton.callback = kill_itself
-    nobutton.callback = no_kill 
+    nobutton.callback = no_kill
     ##i just copy these button interactions from youtube
 
 
@@ -112,7 +138,6 @@ async def start(ctx):
         if enable_Chinese:
             rcon_client.command("say 有個傻瓜正在嘗試啟動伺服器")
         time.sleep(1)
-        print(rcon_client.outputs)
         serveroff = rcon_client.outputs[0] ##take RCON status
     
     if serveroff != "0": ##indicate RCON is not off, server is on
@@ -122,14 +147,11 @@ async def start(ctx):
             await ctx.send("伺服器已經在運行中")
             await ctx.send(f"{ctx.author.mention} 是個傻瓜")    
         return
-    
     global jar_itself
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
         args = ["./",launch_path]
-    print(args)
-    print(launch_path)
     jar_itself = subprocess.Popen(args)
     await ctx.send("Server starting...")
     if enable_Chinese:
