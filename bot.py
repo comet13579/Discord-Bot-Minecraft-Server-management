@@ -5,7 +5,10 @@ from RCON import python_rcon_client
 import subprocess
 import sys
 import time
-import ctypes
+if sys.platform == "win32":
+    from java_pid_win32 import find_all_java_pids
+else:
+    from java_pid_unix import find_all_java_pids
 
 #load properties
 with open("bot.properties") as properties:
@@ -22,24 +25,6 @@ with open("bot.properties") as properties:
 #initialize bot+
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = bot_prefix, intents = intents)
-
-def force_quit_process(pid):
-    PROCESS_TERMINATE = 1
-    process_handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, pid)
-    
-    if not process_handle:
-        print(f"Failed to open process with PID {pid}.")
-        return
-    
-    result = ctypes.windll.kernel32.TerminateProcess(process_handle, -1)
-    
-    if not result:
-        print(f"Failed to terminate process with PID {pid}.")
-    else:
-        print(f"Process {pid} has been forcefully terminated.")
-    
-    ctypes.windll.kernel32.CloseHandle(process_handle)
-    ##function from gpt
 
 @bot.event
 async def on_ready():
@@ -108,11 +93,11 @@ async def forcequit(ctx):
 
     async def kill_itself(interaction):
         
+        ##kill the server with pid
         if sys.platform == "win32":
-            force_quit_process(jar_itself.pid)
+            subprocess.run(["taskkill","/F","/PID",str(jar_pid)])
         else:
-            jar_itself.kill()
-        ##kill the server
+            subprocess.run(["kill",str(jar_pid)])
         message = "Server is forced to stop"  + "\n伺服器已被強制關閉" * enable_Chinese
         await interaction.response.edit_message(content = message, view=None)
     async def no_kill(interaction):
@@ -147,12 +132,19 @@ async def start(ctx):
             await ctx.send("伺服器已經在運行中")
             await ctx.send(f"{ctx.author.mention} 是個傻瓜")    
         return
-    global jar_itself
+    
+    global jar_pid
+
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
         args = ["./",launch_path]
-    jar_itself = subprocess.Popen(args)
+    old_java_pids = find_all_java_pids()
+    subprocess.Popen(args)
+    time.sleep(0.2) ##allow the server to start to obtain the new java pid
+    new_java_pids = find_all_java_pids()
+    jar_pid = min(set(new_java_pids) - set(old_java_pids))
+    print(jar_pid)
     await ctx.send("Server starting...")
     if enable_Chinese:
         await ctx.send("伺服器啟動中...")
