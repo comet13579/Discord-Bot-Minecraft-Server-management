@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
+from discord.ui import Button, View
 from RCON import python_rcon_client
 import subprocess
 import sys
 import time
+
+global jar_itself
 
 #load properties
 with open("bot.properties") as properties:
@@ -71,6 +74,33 @@ async def ip(ctx):
 
 @bot.command()
 @commands.cooldown(1, 60, commands.BucketType.user)
+async def forcequit(ctx):
+    """強制關閉伺服器 每60秒只能使用一次"""
+    global jar_itself
+    yesbutton = Button(label="KILL" + "強制關閉" * enable_Chinese, style=discord.ButtonStyle.danger)
+    nobutton = Button(label="NO" + "不要關閉" * enable_Chinese, style=discord.ButtonStyle.blurple)
+    view = View(timeout=10)
+    view.add_item(yesbutton)
+    view.add_item(nobutton)
+    await ctx.send("Are you sure to force quit the server?" + "\n你要強制關閉伺服器嗎?" * enable_Chinese, view=view)
+
+    async def kill_itself(interaction):
+        global jar_itself
+        jar_itself.kill()
+        message = "Server is forced to stop"  + "\n伺服器已被強制關閉" * enable_Chinese
+        await interaction.response.edit_message(content = message, view=None)
+    async def no_kill(interaction):
+        message = "Force Shut is rejected" + "\n伺服器並未強制關閉" * enable_Chinese
+        await interaction.response.edit_message(content = message, view=None)
+
+
+    yesbutton.callback = kill_itself
+    nobutton.callback = no_kill 
+    ##i just copy these button interactions from youtube
+
+
+@bot.command()
+@commands.cooldown(1, 60, commands.BucketType.user)
 async def start(ctx):
     """啟動伺服器 每60秒只能使用一次"""
 
@@ -93,14 +123,14 @@ async def start(ctx):
             await ctx.send(f"{ctx.author.mention} 是個傻瓜")    
         return
     
-
+    global jar_itself
     if sys.platform == "win32":
         args = ["cmd.exe","/c ",launch_path]
     else:
         args = ["./",launch_path]
     print(args)
     print(launch_path)
-    subprocess.Popen(args)
+    jar_itself = subprocess.Popen(args)
     await ctx.send("Server starting...")
     if enable_Chinese:
         await ctx.send("伺服器啟動中...")
