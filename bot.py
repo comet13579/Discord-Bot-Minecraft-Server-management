@@ -5,10 +5,7 @@ from RCON import python_rcon_client
 import subprocess
 import sys
 import time
-if sys.platform == "win32":
-    from java_pid_win32 import find_all_java_pids
-else:
-    from java_pid_unix import find_all_java_pids
+from java_pid import find_all_java_pids
 
 #load properties
 with open("bot.properties") as properties:

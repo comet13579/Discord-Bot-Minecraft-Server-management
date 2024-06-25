@@ -1,8 +1,13 @@
 import subprocess
 import os
+import sys
 
 def find_all_java_pids():
     try:
+        if sys.platform == 'win32':
+            jps = 'jps.exe'
+        else:
+            jps = 'jps'
         # Get the JAVA_HOME environment variable
         java_home = os.environ.get('JAVA_HOME')
         if not java_home:
@@ -12,7 +17,7 @@ def find_all_java_pids():
         jdk_bin_path = os.path.join(java_home, 'bin')
 
         # Run the `jps` command from the JDK bin directory
-        result = subprocess.run([os.path.join(jdk_bin_path, 'jps.exe')], stdout=subprocess.PIPE, text=True)
+        result = subprocess.run([os.path.join(jdk_bin_path, jps)], stdout=subprocess.PIPE, text=True)
         output = result.stdout
 
         java_pids = []
