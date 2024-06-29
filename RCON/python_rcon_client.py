@@ -97,5 +97,7 @@ class RCONClient:
 
 # Usage example:
 if __name__ == "__main__":
-    with RCONClient('192.168.1.248', 25575, '12345678') as rcon_client:
-        rcon_client.command('stop')
+    with RCONClient('192.168.1.248', 25577, '12345678') as rcon_client:
+        rcon_client.command('list')
+        lst = rcon_client.outputs
+    print(lst)

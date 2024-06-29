@@ -6,6 +6,7 @@ import subprocess
 import sys
 import time
 from java_pid import find_all_java_pids
+from playername import playercount_string
 
 #load properties
 with open("bot.properties") as properties:
@@ -70,6 +71,15 @@ async def serverexist(ctx):
         if enable_Chinese:
             await ctx.send("伺服器不在線上, 請啟動伺服器")
 
+@bot.command()
+async def playercount(ctx):
+    """獲取伺服器玩家數量"""
+    with python_rcon_client.RCONClient(localhost_ip, server_RCON_port, server_RCON_passsword) as rcon_client:
+        rcon_client.command("list")
+        playerlist = rcon_client.outputs[0]
+    playercountlist = playercount_string(playerlist, enable_Chinese)
+    for playercount in playercountlist:
+        await ctx.send(playercount)
 
 @bot.command()
 async def ip(ctx):
