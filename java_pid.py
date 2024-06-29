@@ -8,6 +8,7 @@ def find_all_java_pids():
             jps = 'jps.exe'
         else:
             jps = 'jps'
+
         # Get the JAVA_HOME environment variable
         java_home = os.environ.get('JAVA_HOME')
         if not java_home:
