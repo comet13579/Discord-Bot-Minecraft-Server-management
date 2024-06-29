@@ -12,7 +12,6 @@ class RCONClient:
 
     def __enter__(self):
         self.connect()
-        self.login()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -23,9 +22,10 @@ class RCONClient:
         Establishes a TCP connection to the RCON server.
         """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.settimeout(5)  # Set timeout to 5 seconds
+        self.socket.settimeout(3)  # Set timeout to 2 seconds
         try:
             self.socket.connect((self.host, self.port))
+            self.login()
         except ConnectionRefusedError:
             print("Server is not reachable. Connection refused.")
             self.outputs.append("0") ##Server is not reachable mark.
@@ -95,7 +95,6 @@ class RCONClient:
         if self.socket:
             self.socket.close()
 
-# Usage example:
 if __name__ == "__main__":
     with RCONClient('192.168.1.248', 25577, '12345678') as rcon_client:
         rcon_client.command('list')
