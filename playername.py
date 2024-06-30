@@ -1,9 +1,9 @@
 def playercount_string(log_string, enableChinese):
     outputstringlist = []
     if log_string == "0":
-        outputstringlist.append("No players online")
+        outputstringlist.append("Server is offline, please start the server")
         if enableChinese:
-            outputstringlist.append("目前沒有玩家在線上")
+            outputstringlist.append("伺服器不在線上, 請啟動伺服器")
         return outputstringlist
     start_index = log_string.find("There are")
     if start_index != -1:
@@ -25,7 +25,14 @@ def playercount_string(log_string, enableChinese):
             player_names = player_names_str.split(", ")
             
             # Print player count and player names
-            outputstringlist.append(f"There are {player_count} players online: ")
+            if player_count >= 2:
+                s = "s"
+                be = "are"
+            else:
+                s = ""
+                be = "is"
+
+            outputstringlist.append(f"There {be} {player_count} player{s} online: ")
             if enableChinese:
                 outputstringlist.append(f"目前有{player_count}名玩家在線上: ")
                 outputstringlist.append(player_names_str)
