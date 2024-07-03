@@ -78,8 +78,9 @@ async def playercount(ctx):
         rcon_client.command("list")
         playerlist = rcon_client.outputs[0]
     playercountlist = playercount_string(playerlist, enable_Chinese)
-    for playercount in playercountlist:
-        await ctx.send(playercount)
+    for i in range(len(playercountlist)):
+        if playercountlist[i] != "":
+            await ctx.send(playercountlist[i])
 
 @bot.command()
 async def ip(ctx):
